@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="mapper.CityMapper">
+     <resultMap id="resultCity" type="common.City">
+        <result property="Name" column="Name" />
+        <result property="Code" column="Code" />
+        
+        <!-- <collection property="districts" ofType="common.District">
+            <result property="Name" column="Name" />
+            <result property="Code" column="Code" /> 
+            <result property="City.Code" column="city" />           
+        </collection>     -->    
+    </resultMap>
+     <select id="getCity" resultMap="resultCity" >
+         SELECT "Code", "Name" FROM<!-- 操作postgresql数据库语句 ，注意substr的类型转换，||拼接和like的使用-->
+	(SELECT "Code", "Name" FROM zh_cn."Region"
+         WHERE SUBSTR(CAST("Code" AS text),5,2) = '00' and "Name" != '市辖区'
+ 	) AS ss WHERE "Name" LIKE '%'||'市' or "Name" LIKE '%'||'州'
+         or "Name" LIKE '%'||'区' 
+     </select>
+     <insert id="insertCity" parameterType="common.City">
+     	 insert into zh_cn."City" ("Code", "Name") 
+     	 values (#{Code}, #{Name})
+     </insert>
+  
+ </mapper>
